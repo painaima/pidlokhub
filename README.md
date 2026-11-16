@@ -1,1 +1,18 @@
-cat: README.md: No such file or directory
+# Pidlok Hub
+
+เว็บหน้าร้านสำหรับธุรกิจ เน้นมือถือที่ `pidlokhub.com/businessname` รวมข้อมูลร้าน Social, Map, Delivery และสินค้าในหน้าเดียว พร้อม CMS จัดหน้าแบบโมดูล
+
+## เอกสารส่งต่อสำหรับพัฒนา
+
+- [Product & Design Handoff](HANDOFF.md)
+- [ตัวอย่างหน้าร้านบนมือถือ](docs/design/mobile-storefront-social.jpg)
+- [ตัวอย่าง CMS บนมือถือ](docs/design/mobile-cms-modules.jpg)
+
+## ทิศทางล่าสุด
+
+- หน้าร้านแนว Social profile: เข้าใจเร็ว รูปเด่น ปุ่มกดง่าย
+- Section เป็นโมดูล เลือก Layout ลากเรียง เปิด–ปิด และสร้าง DIY Section ได้
+- เปลี่ยนธีม สีพื้น และรูปทรง Avatar โดยคงข้อมูลเดิม
+- รองรับการต่อยอด Google SSO แพ็กเกจสมาชิก หน้าแยก และ Add-on เช่น จองคิวหรือนัดหมายในเฟสถัดไป
+
+Repository นี้เริ่มต้นด้วยเอกสารและภาพแนวทางออกแบบ ยังไม่มีแอปที่พัฒนาเสร็จ ภาพร้าน อาหาร และราคาในภาพเป็นตัวอย่าง ต้องยืนยันก่อนใช้งานจริง
