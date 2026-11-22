@@ -67,10 +67,10 @@ function appPage(boot, { title, description = '', image = '', origin, path, noin
 }
 
 function simplePage(title, inner, status = 200) {
-  return html(`<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><title>${escapeHTML(title)}</title><link rel="stylesheet" href="/styles.css"><style>
+  return html(`<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><title>${escapeHTML(title)}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="/styles.css"><style>
   .simple{max-width:560px;margin:0 auto;padding:72px 16px;text-align:center}
-  .simple h1{font-size:30px;letter-spacing:-.8px;margin:22px 0 10px}
-  .simple p{color:var(--muted);font-size:14px;line-height:1.8}
+  .simple h1{font-size:32px;letter-spacing:-.8px;margin:22px 0 10px}
+  .simple p{color:var(--muted);font-size:16px;line-height:1.8}
   .simple .actions{display:flex;gap:10px;justify-content:center;margin-top:26px;flex-wrap:wrap}
   .simple .brand{justify-content:center}
   </style></head><body><main class="simple"><a class="brand" href="/" aria-label="Pidlok Hub"><span class="brand-mark">p<span>h</span></span><span>pidlok<span class="brand-light">hub</span></span></a>${inner}</main></body></html>`, status);
@@ -80,7 +80,7 @@ const homePage = () => simplePage('Pidlok Hub — หน้าร้านออ
   <h1>หน้าร้านออนไลน์<br>ในลิงก์เดียว</h1>
   <p>รวมข้อมูลร้าน ช่องทางติดต่อ แผนที่ และสินค้า<br>ไว้ที่ pidlokhub.com/ชื่อร้าน ออกแบบมาเพื่อมือถือ</p>
   <div class="actions"><a class="btn primary" href="/admin">เข้าสู่ระบบเพื่อจัดการร้าน</a></div>
-  <p style="margin-top:28px;font-size:12px">ช่วงทดลองใช้งาน · เฉพาะผู้ได้รับเชิญ</p>`);
+  <p style="margin-top:28px;font-size:14px">ช่วงทดลองใช้งาน · เฉพาะผู้ได้รับเชิญ</p>`);
 
 const notFoundPage = () => simplePage('ไม่พบหน้าร้าน — Pidlok Hub', `
   <h1>ไม่พบหน้าร้านนี้</h1>
