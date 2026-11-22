@@ -64,3 +64,51 @@ Repository นี้เริ่มต้นด้วยเอกสารแล
 Top bar ย้ายไปเมนูหลัก **Header** และติดด้านบนเวลาเลื่อน คงการตั้งค่าโลโก้ ชื่อ ฟอนต์ สี และสไตล์เมนูเดิม
 
 เมนู **Footer** เปิด–ปิดแถบติดด้านล่างได้ เลือกระหว่างปุ่ม Social 1–2 คอลัมน์ (ฟังก์ชันเดียวกับ Section Social) หรือเมนูไอคอน DIY สูงสุด 5 ช่อง ไอคอนบน คำล่าง แก้ลิงก์ ข้อความ ไอคอน และจัดลำดับได้ ค่าเริ่มต้น Footer ปิดอยู่ ให้เปิดสวิตช์เพื่อทดลอง
+
+
+## ระบบทดลองบน Cloudflare (pidlokhub.com)
+
+ใช้โค้ดชุดเดียวกับต้นแบบใน `prototype/` แต่เก็บข้อมูลบนเซิร์ฟเวอร์ และให้หนึ่งบัญชีมีได้หลายแบรนด์
+
+| URL | ใช้ทำอะไร |
+|---|---|
+| `pidlokhub.com/<slug>` | หน้าแบรนด์สาธารณะ (ฉบับเผยแพร่ล่าสุด) |
+| `pidlokhub.com/admin` | รายการแบรนด์ของฉัน เพิ่ม/ลบแบรนด์ (ต้องล็อกอิน) |
+| `pidlokhub.com/admin/<slug>` | CMS ของแบรนด์ บันทึกร่างอัตโนมัติ กดเผยแพร่เพื่อขึ้นหน้าจริง |
+
+- **ล็อกอิน**: Cloudflare Access (รหัสทางอีเมล) ครอบ `/admin` และ `/api/admin` เพิ่ม/ลบผู้ทดลองที่ Zero Trust › Access › Applications › `pidlokhub admin` › Policies
+- **โครงสร้าง**: Worker `pidlokhub` (`src/index.js`), D1 `pidlok-db` (ตาราง `brands`), R2 `pidlok-media` (รูปที่อัปโหลด เสิร์ฟที่ `/media/...`)
+- Worker ตรวจ JWT ของ Access เอง (`src/auth.js`) และแก้ได้เฉพาะแบรนด์ที่ `owner_email` ตรงกับผู้ล็อกอิน
+- ไฟล์หน้าเว็บใน `prototype/` ถูกฝังเข้า Worker ตอน build (`scripts/build-static.mjs`)
+
+### พัฒนาและ deploy
+
+```bash
+npm install
+```
+
+```bash
+echo 'DEV_USER_EMAIL=you@example.com' > .dev.vars
+```
+
+```bash
+npm run db:migrate:local
+```
+
+```bash
+npm run dev
+```
+
+เปิด `http://localhost:8787/admin` (ในเครื่องจะล็อกอินเป็น `DEV_USER_EMAIL` อัตโนมัติ ใช้ได้เฉพาะ localhost)
+
+Deploy ขึ้น production โดยตรง (ไม่มี staging):
+
+```bash
+npm run db:migrate
+```
+
+```bash
+npm run deploy
+```
+
+ใน cloud session ของ Claude ให้ตั้ง `CLOUDFLARE_API_TOKEN=proxy-injected` และ `CLOUDFLARE_ACCOUNT_ID` ก่อนรัน เพราะ proxy ใส่ token จริงให้
