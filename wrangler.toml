@@ -1,0 +1,21 @@
+name = "pidlokhub"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[build]
+command = "node scripts/build-static.mjs"
+
+[vars]
+ACCESS_TEAM_DOMAIN = "painaima.cloudflareaccess.com"
+ACCESS_AUD = "faf2eca6154824c1e9228277abbaf400f513c5d44417d7de8c13457e3e64ed55"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pidlok-db"
+database_id = "412ef11a-d540-4f39-9272-6194414debe9"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "pidlok-media"

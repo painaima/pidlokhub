@@ -16,22 +16,25 @@ deploy ตรงขึ้น production ไม่มี staging
   ต้องให้ไฟล์นี้ยังใช้งานได้ในโหมดเดโม (ไม่มี API ก็ใช้ localStorage แบบเดิม)
 - รายละเอียดสินค้าและดีไซน์อยู่ใน HANDOFF.md
 
-## Stack (Cloudflare ทั้งหมด)
-- Cloudflare Pages (static) + Pages Functions ในโฟลเดอร์ functions/
-- D1 ชื่อ pidlokhub-db, binding DB
-- R2 bucket ชื่อ pidlokhub-media, binding MEDIA
-- โดเมน pidlokhub.com (zone อยู่ในบัญชี Cloudflare เดียวกัน)
-- ล็อกอิน: Cloudflare Access (Email one-time PIN) ครอบ /admin* และ /api/admin/*
-- deploy ด้วย wrangler (CLOUDFLARE_API_TOKEN ถูก proxy ใส่ให้ ใช้ค่า placeholder ได้)
-- ไม่ใช้ framework ฝั่งหน้าเว็บ คง HTML/CSS/JS แบบเดิม; Functions เขียนเป็น JS/TS ล้วน
+## Stack (ตั้งค่าและ deploy ไว้แล้ว ดู wrangler.toml)
+- Cloudflare **Worker** ชื่อ pidlokhub (ไม่ใช้ Pages: proxy ของ cloud session
+  เขียนทับ JWT ของ Pages/Workers static-assets upload จึงฝังไฟล์หน้าเว็บไว้ใน Worker)
+  - scripts/build-static.mjs ฝังทุกไฟล์ใน public/ ลง src/_static.js (รันอัตโนมัติก่อน deploy)
+  - src/index.js เป็น entry: route /api/* และเสิร์ฟไฟล์ static
+  - ห้ามใช้ [assets] ใน wrangler.toml
+- D1 pidlok-db (binding DB), R2 pidlok-media (binding MEDIA) — มีอยู่แล้ว ว่างเปล่า
+- โดเมน pidlokhub.com และ www.pidlokhub.com ผูกกับ Worker แล้ว
+- Cloudflare Access app "pidlokhub admin" ครอบ /admin และ /api/admin แล้ว
+  ACCESS_TEAM_DOMAIN และ ACCESS_AUD อยู่ใน [vars] ของ wrangler.toml แล้ว
+- deploy: CLOUDFLARE_API_TOKEN=proxy-injected CLOUDFLARE_ACCOUNT_ID=dfe492b19d7b5684b6ec24c0b3d473a4 npm run deploy
+  (proxy ใส่ token จริงให้) — deploy ตรง production ทุกครั้ง
+- ไม่ใช้ framework ฝั่งหน้าเว็บ คง HTML/CSS/JS แบบเดิม; Worker เขียนเป็น JS ล้วน
 
-## โครงไฟล์ที่ต้องการ
-- package.json (devDependency: wrangler, script: dev, deploy, db:migrate)
-- wrangler.toml (pages_build_output_dir = "public", binding DB และ MEDIA)
-- migrations/0001_init.sql
-- public/ = หน้าเว็บที่ deploy (สร้างจาก prototype/ หรือย้ายมา)
-- functions/api/... ตามรายการ API ด้านล่าง
-- functions/_middleware.js หรือ helper ตรวจ Access JWT
+## โครงไฟล์
+- มีแล้ว: package.json, wrangler.toml, scripts/build-static.mjs, src/index.js
+  (มี /api/health ตรวจ D1), public/ (สำเนาของ prototype/)
+- ต้องเพิ่ม: migrations/0001_init.sql, แยก route/handler ใน src/ (เช่น src/api/*.js),
+  src/auth.js ตรวจ Access JWT
 
 ## ฐานข้อมูล (D1)
 CREATE TABLE shops (
@@ -77,11 +80,11 @@ seed ร้านตัวอย่าง slug = "baankong" จากข้อ�
   - อัปโหลด Avatar/รูปสินค้า → /api/admin/upload แล้วเก็บ URL แทน base64
   - ลิงก์ออกจากระบบ: /cdn-cgi/access/logout
 - / → หน้าแนะนำสั้นๆ พร้อมลิงก์ไป /baankong และ /admin
-- ใช้ _routes.json / _redirects ให้ /:slug ไปที่หน้าร้าน
+- routing ทำใน src/index.js: /admin → CMS, /:slug → หน้าร้าน
 
 ## เสร็จเมื่อ
-- npx wrangler pages dev ใช้งานได้ในเครื่อง (จำลอง Access ด้วย env DEV_USER_EMAIL เฉพาะ dev)
-- migration รันบน D1 จริงแล้ว และ deploy ขึ้น Pages แล้ว
+- npm run dev ใช้งานได้ในเครื่อง (จำลอง Access ด้วย env DEV_USER_EMAIL เฉพาะ dev)
+- npm run db:migrate รันบน D1 จริงแล้ว และ npm run deploy แล้ว
 - เปิด /baankong บนมือถือได้ แก้ใน /admin แล้วเผยแพร่ เห็นผลบนหน้าร้าน
 - python3 prototype/build.py ยังสร้างไฟล์เดโมออฟไลน์ได้
 - อัปเดต README.md: วิธี dev, deploy, เพิ่มอีเมลผู้ทดลองใน Access
@@ -90,11 +93,13 @@ seed ร้านตัวอย่าง slug = "baankong" จากข้อ�
 
 ---
 
-## ค่าตั้งค่าที่ต้องเตรียมก่อนรัน prompt
+## สถานะการตั้งค่า (22 พ.ย. 2026)
 
 | รายการ | สถานะ |
 |---|---|
-| Cloudflare API token ใน cloud environment `pidlokhub` | บันทึกแล้ว แต่สิทธิ์ยังไม่ครบ |
-| สิทธิ์ token: Account › D1 Edit, Workers R2 Storage Edit, Cloudflare Pages Edit, Access: Apps and Policies Edit; Zone › DNS Edit (pidlokhub.com) | ต้องเพิ่ม |
-| Zero Trust team domain (`<team>.cloudflareaccess.com`) | ต้องเปิด Zero Trust ครั้งแรกใน Dashboard ถ้ายังไม่เคย |
-| รายชื่ออีเมลผู้ทดลอง | ต้องระบุ |
+| Cloud environment `pidlokhub` + Cloudflare API token (หมดอายุ 22 ธ.ค. 2026) | พร้อม |
+| Worker `pidlokhub` + D1 `pidlok-db` + R2 `pidlok-media` | deploy แล้ว, `/api/health` ตอบ `{"ok":true,"db":true}` |
+| pidlokhub.com, www.pidlokhub.com | ผูกกับ Worker แล้ว |
+| Access app ครอบ `/admin`, `/api/admin` | สร้างแล้ว แต่ยังไม่มี policy (ยังไม่มีใครเข้าได้) |
+| One-time PIN login ใน Zero Trust | ต้องเปิดใน Dashboard (token ไม่มีสิทธิ์ Identity Providers) |
+| รายชื่ออีเมลผู้ทดลอง → Access policy | รอรายชื่อ |
