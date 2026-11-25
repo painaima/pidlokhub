@@ -70,7 +70,7 @@ const defaults = {
       {text:'ที่จอดรถ',url:link.line,icon:'car',background:'#F3F3F3'}]},
     {id:'shortcuts',type:'shortcuts',title:'ทางลัดของร้าน',layout:'circles',enabled:true},
     {id:'products',type:'products',title:'เมนูบ้านก๋ง',layout:'grid',columns:3,ratio:'1:1',showNames:false,collapsible:true,enabled:true},
-    {id:'gallery',type:'gallery',title:'บรรยากาศบ้านก๋ง',layout:'grid',ratio:'3:2',images:[image('shop'),image('eggs')],enabled:false},
+    {id:'gallery',type:'gallery',title:'บรรยากาศบ้านก๋ง',layout:'grid',ratio:'4:3',images:[image('shop'),image('eggs')],enabled:false},
     {id:'location',type:'location',title:'แวะมาหาก๋ง',layout:'map',enabled:true},
     {id:'promotion',type:'promo',title:'วันนี้ที่บ้านก๋ง',layout:'card',body:'เริ่มต้นวันดี ๆ ด้วยอาหารเช้าอุ่น ๆ\nแวะมาหาก๋งได้ทุกวัน 07.00–15.00 น.',button:'สอบถามทาง LINE',url:link.line,enabled:false}
   ],
@@ -83,11 +83,11 @@ const defaults = {
     {id:'coffee',name:'กาแฟโบราณ',price:55,category:'เครื่องดื่ม',description:'กาแฟรสเข้ม หอมกลิ่นกาแฟโบราณ เข้ากับมื้อเช้า',images:[image('coffee')]}
   ]
 };
-const IMAGE_RATIOS=[['3:2','3:2','แนวนอน'],['1:1','1:1','จัตุรัส'],['2:3','2:3','แนวตั้งสูง'],['4:5','4:5','แนวตั้ง']];
-const RATIO_DEFAULT={products:'1:1',gallery:'3:2'};
+const IMAGE_RATIOS=[['3:2','3:2','แนวนอน'],['4:3','4:3','แนวนอนสั้น'],['1:1','1:1','จัตุรัส'],['2:3','2:3','แนวตั้งสูง'],['4:5','4:5','แนวตั้ง']];
+const RATIO_DEFAULT={products:'1:1',gallery:'4:3'};
 const ratioOf=section=>IMAGE_RATIOS.some(([id])=>id===section?.ratio)?section.ratio:(RATIO_DEFAULT[section?.type]||'1:1');
 const ratioCSS=section=>ratioOf(section).replace(':',' / ');
-const ratioControl=section=>{const current=ratioOf(section);return `<div class="control-row"><span>สัดส่วนภาพ</span><div class="segmented">${IMAGE_RATIOS.map(([id,label,hint])=>`<button data-ie-ratio="${id}" class="${current===id?'selected':''}" aria-pressed="${current===id}" title="${hint}">${label}</button>`).join('')}</div></div>`;};
+const ratioControl=section=>{const current=ratioOf(section);return `<div class="control-row ratio-row"><span>สัดส่วนภาพ</span><div class="segmented">${IMAGE_RATIOS.map(([id,label,hint])=>`<button data-ie-ratio="${id}" class="${current===id?'selected':''}" aria-pressed="${current===id}" title="${hint}">${label}</button>`).join('')}</div></div>`;};
 const clone = value => JSON.parse(JSON.stringify(value));
 const STORAGE='pidlokhub-prototype-v1';
 let storageError=false;
