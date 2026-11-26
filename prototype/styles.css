@@ -32,3 +32,5 @@
 .ratio-row>span{white-space:nowrap;margin-right:10px}
 .ratio-row .segmented{gap:2px}
 .ratio-row .segmented button{min-width:34px;padding:0 4px}
+.save-text{display:flex;flex-direction:column;gap:2px;line-height:1.35}
+.upload-usage{color:#6f6a7d;white-space:nowrap}
