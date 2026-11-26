@@ -202,6 +202,18 @@ async function handleAdminAPI(request, env, parts) {
     return json({ ok: true, url: `/${slug}` });
   }
 
+  if (action === 'media' && method === 'GET') {
+    await ownedBrand(env, slug, email);
+    const files = [];
+    let cursor;
+    do {
+      const listed = await env.MEDIA.list({ prefix: `${slug}/`, cursor });
+      for (const o of listed.objects) files.push({ url: `/media/${o.key}`, size: o.size });
+      cursor = listed.truncated ? listed.cursor : undefined;
+    } while (cursor);
+    return json({ files, total: files.reduce((n, f) => n + f.size, 0) });
+  }
+
   if (action === 'upload' && method === 'POST') {
     await ownedBrand(env, slug, email);
     const length = Number(request.headers.get('content-length') || 0);
